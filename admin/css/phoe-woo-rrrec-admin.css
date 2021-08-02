@@ -1,0 +1,148 @@
+/**
+ * All of the CSS for your admin-specific functionality should be
+ * included in this file.
+ */
+
+body {
+    background: #f1f1f1;
+    color: #444;
+    font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Oxygen-Sans,Ubuntu,Cantarell,"Helvetica Neue",sans-serif;
+    font-size: 13px;
+    line-height: 1.4em;
+    min-width: 600px;
+}
+
+
+.w-10{width:10%;}
+.w-15{width:15%;}
+.w-20{width:20%;}
+.w-25{width:25%;}
+.w-30{width:30%;}
+.w-35{width:34%;}
+.w-40{width:40%;}
+.w-45{width:45%;}
+.w-50{width:50%;}
+.w-55{width:55%;}
+.w-60{width:60%;}
+.w-65{width:65%;}
+.w-70{width:70%;}
+.w-75{width:75%;}
+.w-80{width:80%;}
+.w-85{width:85%;}
+.w-90{width:90%;}
+.w-95{width:95%;}
+.w-100{width:100%;}
+
+.phoe-card{
+	margin-bottom: 24px;
+    background: #fff;
+    border-radius: 3px;
+    box-shadow: 0 2px 1px -1px rgb(0 0 0 / 20%), 0 1px 1px 0 rgb(0 0 0 / 14%), 0 1px 3px 0 rgb(0 0 0 / 12%);
+    transition: box-shadow 0.2s cubic-bezier(0.4, 1, 0.4, 1);
+}
+
+.phoe-card-header{
+    padding: 16px;
+    display: -ms-grid;
+    display: grid;
+    align-items: center;
+    border-top-left-radius: 3px;
+    border-top-left-radius: 4px;
+    border-bottom: 1px solid #dcd3d3;
+}
+
+.phoe-card-body{
+	padding: 16px;
+}
+
+input, select {
+    /*width: 100%;*/
+}
+
+.row::after {
+  content: "";
+  clear: both;
+  display: table;
+}
+[class*="col-"] {
+  float: left;
+  /*padding: 15px;*/
+}
+
+.col-1 {width: 8.33%;}
+.col-2 {width: 16.66%;}
+.col-3 {width: 25%;}
+.col-4 {width: 33.33%;}
+.col-5 {width: 41.66%;}
+.col-6 {width: 50%;}
+.col-7 {width: 58.33%;}
+.col-8 {width: 66.66%;}
+.col-9 {width: 75%;}
+.col-10 {width: 83.33%;}
+.col-11 {width: 91.66%;}
+.col-12 {width: 100%;}
+
+.f-left{
+  float: left;
+}
+.clear::after{
+  content: "";
+  clear: both;
+  display: table;
+}
+
+.mr-p-5{margin-right: 5%;}
+.ml-p-5{margin-left: 5%;}
+.mr-p-10{margin-right: 10%;}
+.ml-p-10{margin-left: 10%;}
+
+
+.text-center{
+  text-align: center;
+}
+
+.text-right{
+  text-align: right;
+}
+
+.b-bottom{
+  border-bottom: 1px solid gray;
+}
+
+.t-bottom{
+  border-top: 1px solid gray;
+}
+
+.my-btn {
+  background-color: #5882a9;
+  border: none;
+  color: white;
+  padding: 5px 10px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  /*font-size: 16px;*/
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.btn-green{
+  background-color: #4CAF50;
+}
+
+.btn-red{
+  background-color: #dc3232;
+}
+
+.btn-b-green{
+  background-color:#fff;
+  color:black;
+  border: 2px solid #4CAF50;
+}
+
+.btn-b-red{
+  background-color:#fff;
+  color:black;
+  border: 2px solid #dc3232;
+}
+
