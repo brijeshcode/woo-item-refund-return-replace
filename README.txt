@@ -1,6 +1,6 @@
-=== Plugin Name ===
-Contributors: (this should be a list of wordpress.org userid's)
-Donate link: https://www.phoeniixx.com/
+=== Plugin Name: Woo order item return return and replace  ===
+Contributors: this plugin is an addon for woocommerce plugin, this enable admin to add return , cancel, replace or exchange button for order individual item and give admin control to approve or denied requests of customer
+Contact link: https://www.freelancer.com/u/brijeshlancer
 Tags: comments, spam
 Requires at least: 3.0.1
 Tested up to: 3.4
