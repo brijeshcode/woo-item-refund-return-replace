@@ -32,30 +32,29 @@
 })( jQuery );
 
 
-function addReasonRow(type ='refund') {
-		index = jQuery('.'+type+ '-reason-index').val();
-		add_to  = '.'+type+'-reasons';
-		var pre = '<?= $pre; ?>';
-		var js_html = '';
-		js_html += '<tr class="'+type+'-'+index+'">';
-		js_html += '<td>';
-		js_html += '<input type="text" required class="w-100" placeholder="Tag Name" name="<?= $pre; ?>['+type+'][reason]['+index+'][tag]">';
-		js_html += '</td>';
-		js_html += '<td>';
-		js_html += '<textarea  class="w-100" required placeholder=" Reason 1, Reason 2, Reason 3, .... " name="<?= $pre; ?>['+type+'][reason]['+index+'][reasons]"></textarea>';
-		js_html += '</td>';
-		js_html += '<td>';
-		js_html += '<span class="my-btn btn-b-red" onclick="removeMe(\''+type+'\', \''+index+'\')">Delete</span>';
-		js_html += '</td>';
-		js_html += '</tr>';
-		js_html += '';
+function addReasonRow(type ='refund', pre) {
+	index = jQuery('.'+type+ '-reason-index').val();
+	add_to  = '.'+type+'-reasons';
+	var js_html = '';
+	js_html += '<tr class="'+type+'-'+index+'">';
+	js_html += '<td>';
+	js_html += '<input type="text" required class="w-100" placeholder="Tag Name" name="'+pre+'['+type+'][reason]['+index+'][tag]">';
+	js_html += '</td>';
+	js_html += '<td>';
+	js_html += '<textarea  class="w-100" required placeholder=" Reason 1, Reason 2, Reason 3, .... " name="'+pre+'['+type+'][reason]['+index+'][reasons]"></textarea>';
+	js_html += '</td>';
+	js_html += '<td>';
+	js_html += '<span class="my-btn btn-b-red" onclick="removeMe(\''+type+'\', \''+index+'\')">Delete</span>';
+	js_html += '</td>';
+	js_html += '</tr>';
+	js_html += '';
 
-		jQuery(add_to).append(js_html);
-		jQuery('.'+type+ '-reason-index').val(++index);
-	}
+	jQuery(add_to).append(js_html);
+	jQuery('.'+type+ '-reason-index').val(++index);
+}
 
-	function removeMe(type, index) {
-		if (confirm('Delete confirm')) {
-			jQuery('.'+type+'-'+index).remove();
-		}
+function removeMe(type, index) {
+	if (confirm('Delete confirm')) {
+		jQuery('.'+type+'-'+index).remove();
 	}
+}

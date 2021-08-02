@@ -140,7 +140,6 @@ class Phoe_Woo_Rrrec_Admin {
 		include 'template/'.$template.'.php';
 	}
 
-
 	public function phoe_save_order_item_action_settings()
 	{
 		if (!check_admin_referer('phoe_order_item_action_settings', 'phoe_order_item_action_settings_nonce_field')) {
@@ -150,28 +149,11 @@ class Phoe_Woo_Rrrec_Admin {
 		if (!wp_verify_nonce( $_POST['phoe_order_item_action_settings_nonce_field'], 'phoe_order_item_action_settings' ) ) {
 			return '';
 		}
+
 		$submitted = $_POST['phoe_wc_item_action'] ;
-
-		$arrTemp = array();
-		$type = ['refund', 'cancel', 'exchange'];
-		foreach ($type as $Tkey => $Tvalue) {
-			if (!isset($submitted[$Tvalue]))
-				continue;
-
-			foreach ($submitted[$Tvalue] as $key => $reasons) {
-				if ($key = 'reason' && !empty($reasons) && is_array($reasons)) {
-					foreach ($reasons as $reasonKey => $value) {
-						$temp = explode(',', $value['reasons']);
-						foreach ($temp as $arrKey => $arrValue) {
-							$temp[$arrKey] = trim($arrValue);
-						}
-						$temp = array_values(array_filter($temp));
-						$submitted[$Tvalue]['reason'][$reasonKey]['reasons'] = $temp;
-					}
-					$submitted[$Tvalue]['reason'] = array_values($submitted[$Tvalue]['reason']);
-				}
-			}
-		}
-    	update_option("phoe_order_item_actions",$submitted);
+		$key = array_keys($submitted)[0];
+		$old = get_option("phoe_order_item_actions");
+		$old[$key] = $submitted[$key];
+    	update_option("phoe_order_item_actions",$old);
 	}
 }

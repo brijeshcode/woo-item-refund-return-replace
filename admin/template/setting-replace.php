@@ -54,7 +54,7 @@
 					<tr>
 						<th scope="row" style="width: 20%" > Tags </th>
 						<th scope="row" class="reason"> Reasons [Add comma seprated multiple reasons.]</th>
-						<th  style="width: 10%"><span class="my-btn btn-b-green" onclick="addReasonRow('<?= $type ?>')" >Add</span></th>
+						<th  style="width: 10%"><span class="my-btn btn-b-green" onclick="addReasonRow('<?= $type ?>', '<?= $pre ?>')" >Add</span></th>
 					</tr>
 					</thead>
 					<tbody class="<?= $type ?>-reasons">
@@ -70,7 +70,7 @@
 									<input type="text" required class="w-100" placeholder="Tag Name" name="<?= $pre; ?>[<?= $type ?>][reason][<?= $index ?>][tag]" name="tags" value="<?= $value['tag'] ?>">
 								</th>
 								<td class="forminp forminp-text">
-									<textarea  class="w-100" required placeholder=" Reason 1, Reason 2, Reason 3, .... " name="<?= $pre; ?>[<?= $type ?>][reason][<?= $index ?>][reasons]"><?= implode(', ', $value['reasons']) ?></textarea>
+									<textarea  class="w-100" required placeholder=" Reason 1, Reason 2, Reason 3, .... " name="<?= $pre; ?>[<?= $type ?>][reason][<?= $index ?>][reasons]"><?= $value['reasons']; ?></textarea>
 								</td>
 								<th><span class="my-btn btn-b-red" onclick="removeMe('<?= $type; ?>', '<?= $index; ?>')">Delete</span></th>
 							</tr>

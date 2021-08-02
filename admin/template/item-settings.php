@@ -41,7 +41,7 @@
 					<tr>
 						<th scope="row" style="width: 20%" > Tags </th>
 						<th scope="row" class="reason"> Reasons [Add comma seprated multiple reasons.]</th>
-						<th  style="width: 10%"><span class="my-btn btn-b-green" onclick="addReasonRow('<?= $type ?>')" >Add</span></th>
+						<th  style="width: 10%"><span class="my-btn btn-b-green" onclick="addReasonRowOld('<?= $type ?>')" >Add</span></th>
 					</tr>
 					</thead>
 					<tbody class="<?= $type ?>-reasons">
@@ -99,7 +99,7 @@
 					<tr>
 						<th scope="row" style="width: 20%" > Tags </th>
 						<th scope="row" class="reason"> Reasons [Add comma seprated multiple reasons.]</th>
-						<th  style="width: 10%"><span class="my-btn btn-b-green" onclick="addReasonRow('<?= $type ?>')" >Add</span></th>
+						<th  style="width: 10%"><span class="my-btn btn-b-green" onclick="addReasonRowOld('<?= $type ?>')" >Add</span></th>
 					</tr>
 					</thead>
 					<tbody class="<?= $type ?>-reasons">
@@ -159,7 +159,7 @@
 					<tr>
 						<th scope="row" style="width: 20%" > Tags </th>
 						<th scope="row" class="reason"> Reasons [Add comma seprated multiple reasons.]</th>
-						<th  style="width: 10%"><span class="my-btn btn-b-green" onclick="addReasonRow('<?= $type ?>')" >Add</span></th>
+						<th  style="width: 10%"><span class="my-btn btn-b-green" onclick="addReasonRowOld('<?= $type ?>')" >Add</span></th>
 					</tr>
 					</thead>
 					<tbody class="<?= $type ?>-reasons">
@@ -208,7 +208,7 @@
 
 
 <script type="text/javascript">
-	function addReasonRow(type ='refund') {
+	function addReasonRowOld(type ='refund') {
 		index = jQuery('.'+type+ '-reason-index').val();
 		add_to  = '.'+type+'-reasons';
 		var pre = '<?= $pre; ?>';

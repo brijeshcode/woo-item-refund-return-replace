@@ -170,7 +170,7 @@ if ( $show_customer_details ) {
 	      	<h2 class="selected-reason"></h2>
 	        <ul class="list-group">
 	        	<?php foreach ($reasons as $key => $value): ?>
-	 				<?php foreach ($value['reasons'] as $reasonVal): ?>
+	 				<?php foreach (explode(',', $value['reasons']) as $reasonVal): ?>
 	        		<li class="list-group-item reason-items <?= sanitize_title($value['tag']) ?> ">
 	        			<label> <input type="radio" name="reason" value="<?= $value['tag'].' | '.$reasonVal ?>"><?= $reasonVal ?></label>
 	        		</li>
@@ -221,7 +221,7 @@ if ( $show_customer_details ) {
 	      	<h2 class="selected-reason"></h2>
 	        <ul class="list-group">
 	        	<?php foreach ($reasons as $key => $value): ?>
-	 				<?php foreach ($value['reasons'] as $reasonVal): ?>
+	 				<?php foreach (explode(',', $value['reasons']) as $reasonVal): ?>
 	        		<li class="list-group-item reason-items <?= sanitize_title($value['tag']) ?> ">
 	        			<label> <input type="radio" name="reason" value="<?= $value['tag'].' | '.$reasonVal ?>"><?= $reasonVal ?></label>
 	        		</li>
