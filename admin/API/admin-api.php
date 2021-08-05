@@ -20,19 +20,7 @@ if ( !in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', 
 			}
 		}
 
-		/*---------------- Shiprocket tracking API List Start -------------------*/
-		/*register_rest_route( 'wc/v2','/cancel/order-item', array(
-			'methods'  =>WP_REST_Server::ALLMETHODS,
-			'callback' => 'phoe_cancel_order_item_api' ,
-			'args'     => array(
-				'thumb' => array(
-					'default' => null
-				),
-			),
 
-			'permission_callback' => '__return_true'
-
-		));*/
 
 		register_rest_route( 'wc/v2','/order-item/action-settings', array(
 			'methods'  =>WP_REST_Server::ALLMETHODS,
@@ -92,6 +80,17 @@ if ( !in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', 
 			),
 			'permission_callback' => '__return_true'
 		));
+
+		register_rest_route( 'wc/v2','/order-items/status', array(
+			'methods'  =>WP_REST_Server::ALLMETHODS,
+			'callback' => 'phoe_order_items_status' ,
+			'args'     => array(
+				'thumb' => array(
+					'default' => null
+				),
+			),
+			'permission_callback' => '__return_true'
+		));
 	}
 
 	function phoe_cancel_order_item_api(){
@@ -127,23 +126,18 @@ if ( !in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', 
 	}
 
 	function phoe_order_item_refund_request(){
-        $type = 'refund';
-        $response = performOrderItemActionRequest($type);
-        $res_type = $response['res_type'];
-        unset($response['res_type']);
-        return new WP_REST_Response( $response, $res_type );
+        return phoe_make_request('refund');
 	}
 
 	function phoe_order_item_cancel_request(){
-        $type = 'cancel';
-        $response = performOrderItemActionRequest($type);
-        $res_type = $response['res_type'];
-        unset($response['res_type']);
-        return new WP_REST_Response( $response, $res_type );
+        return phoe_make_request('cancel');
 	}
 
 	function phoe_order_item_exchange_request(){
-        $type = 'exchange';
+        return phoe_make_request('exchange');
+	}
+
+	function phoe_make_request($type){
         $response = performOrderItemActionRequest($type);
         $res_type = $response['res_type'];
         unset($response['res_type']);
@@ -168,6 +162,28 @@ if ( !in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', 
 		$item_id = $_GET['item_id'];
 
 		$data = phoe_getItemCancelStatus($order_id, $item_id);
+
+		$response = ['status' => 1];
+		$response['data'] = $data ;
+		return new WP_REST_Response( $response, 200 );
+	}
+
+	function phoe_order_items_status()
+	{
+		if (!isset($_GET['order_id']) || empty($_GET['order_id'])) {
+			$response = ['status' => 0];
+			$response['data'] = 'Error: Insufficient Ressource.' ;
+			return new WP_REST_Response( $response, 400 );
+		}
+
+		$order_id = $_GET['order_id'];
+
+		$data = phoe_query_order_items_request($order_id);
+		if (!$data) {
+			$response = ['status' => 0];
+			$response['data'] = 'No action requested, or invalid resource provided.' ;
+			return new WP_REST_Response( $response, 200 );
+		}
 
 		$response = ['status' => 1];
 		$response['data'] = $data ;
@@ -225,7 +241,6 @@ if ( !in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', 
 			$response['res_type'] = '501';
 			return $response;
 		}
-
 	}
 
 	// validate order item action requests

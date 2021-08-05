@@ -1,7 +1,5 @@
-<?php require_once plugin_dir_path(dirname(__FILE__)) . 'partials/admin-setting-header.php'; ?>
-
 <?php
-// echo "<pre>"; print_r(get_cancel_requests()); echo "</pre>"; die();
+require_once plugin_dir_path(dirname(__FILE__)) . 'partials/admin-setting-header.php';
 if (isset($_GET['action']) && $_GET['action'] == 'approve' && isset($_GET['item_id'])) {
     phoe_admin_approve_order_item_request($_GET['item_id'], 'Cancel');
 }
@@ -11,14 +9,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'denied' && isset($_GET['item_i
 }
 $cancelRequests = get_customer_order_item_requests('Cancel');
 ?>
-<link rel="stylesheet" type="text/css" href="http://cdn.datatables.net/1.10.23/css/jquery.dataTables.min.css">
-<script type="text/javascript" src="https://cdn.datatables.net/1.10.23/js/jquery.dataTables.min.js"></script>
-<script type="text/javascript">
-	jQuery(document).ready( function () {
-    jQuery('.data-table-init').DataTable({
-        "order": [[ 0, "desc" ]]
-    } );
-} );
+
 </script>
 <div class="phoe-card w-95">
 	<div class="phoe-card-header">

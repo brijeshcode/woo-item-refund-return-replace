@@ -1,7 +1,3 @@
-<div class="woocommerce-layout__header">
-    <h1 class="woocommerce-layout__header-heading css-12vx9xw-Text ">Item Actions</h1>
-</div>
-
 <?php
     $tabs = [
         'refund' => 'Refunds',
@@ -10,7 +6,16 @@
     ];
     $pluginSlug = '?page=phoe-wc-item-action&tab=';
 ?>
+<link rel="stylesheet" type="text/css" href="http://cdn.datatables.net/1.10.23/css/jquery.dataTables.min.css">
+<script type="text/javascript" src="https://cdn.datatables.net/1.10.23/js/jquery.dataTables.min.js"></script>
+<script type="text/javascript">
+    jQuery(document).ready( function () {
 
+        jQuery('.data-table-init').DataTable({
+            "order": [[ 0, "desc" ]]
+        } );
+    } );
+</script>
 
 <nav class="nav-tab-wrapper woo-nav-tab-wrapper" style="margin-bottom:25px">
     <?php foreach ($tabs as $para => $tab): ?>

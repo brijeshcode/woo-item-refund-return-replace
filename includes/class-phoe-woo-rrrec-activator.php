@@ -45,6 +45,7 @@ class Phoe_Woo_Rrrec_Activator {
 	   			`id` INT NOT NULL AUTO_INCREMENT ,
 	   			`order_id` INT NOT NULL,
 	   			`item_id` INT NOT NULL,
+	   			`request_from` varchar(20) NOT NULL DEFAULT 'API',
 	   			`request_type` varchar(50) NOT NULL ,
 	   			`request_status` varchar(50) NOT NULL ,
 	   			`request_reason` text NOT NULL,

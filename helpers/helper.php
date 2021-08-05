@@ -9,14 +9,14 @@
 
         $result = $wpdb->get_row($query);
 
-
         if (empty($result)) {
         	return false;
         }
         if ($text) {
             if ($result->request_type == 'Cancel') {
                 if ($result->request_status == 'Submitted') {
-                    return 'Cancel Requested';
+                    $status = 'Cancel Requested';
+                    return  $status;
                 }elseif ($result->request_status == 'Denied') {
                     return 'Cancel Denied';
                 }else{
@@ -44,9 +44,7 @@
                 }
             }
         }
-
-        // return $result['request_status'];
-
+        return $result['request_status'];
 	}
 
     function phoe_count_order_item_acted($order_id)
@@ -65,7 +63,7 @@
         }
     }
 
-    function phoe_cancel_order_item($order_id = '', $cancel_item_id = '') {
+    function phoe_cancel_order_item($order_id = '', $cancel_item_id = '', $calledby ='api') {
         return '';  // no refund
         die('logic fail');
         if (isset($_GET['user_id']) && !empty($_GET['user_id'])) {

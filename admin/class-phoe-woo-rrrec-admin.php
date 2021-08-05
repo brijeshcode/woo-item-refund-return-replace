@@ -29,6 +29,7 @@ class Phoe_Woo_Rrrec_Admin {
 	 * @access   private
 	 * @var      string    $plugin_name    The ID of this plugin.
 	 */
+
 	private $plugin_name;
 
 	/**
@@ -48,7 +49,6 @@ class Phoe_Woo_Rrrec_Admin {
 	 * @param      string    $version    The version of this plugin.
 	 */
 	public function __construct( $plugin_name, $version ) {
-
 		$this->plugin_name = $plugin_name;
 		$this->version = $version;
 		// add_action( 'save_post', array(&$this,'phoe_save_order_item_action_settings' ),10,3 );
@@ -95,16 +95,16 @@ class Phoe_Woo_Rrrec_Admin {
 
 	public function woo_item_action_menu()
 	{
-		 add_submenu_page( 'woocommerce', 'Item Actions', 'Item Action', 'manage_options', 'phoe-wc-item-action',array(&$this,'phoe_wc_item_action_menu' )  );
+		 add_submenu_page( 'woocommerce', 'Actions', 'Actions', 'manage_options', 'phoe-wc-item-action',array(&$this,'phoe_wc_item_action_menu' )  );
 
 		// add_submenu_page( 'admin-menu-url', 'Admin Submenu name', 'Admin Submenu name','administrator', 'admin-submenu-url' , array(&$this,'menu-viewpage-function'));
 	}
-
 
 	public function phoe_wc_item_action_menu() {
 		$default = 'refund';
 		$tab = isset($_GET['tab']) ? $_GET['tab'] : $default; // default
 		$template = '';
+
 		switch ($tab) {
 			case 'cancel':
 				$template = 'item-cancel';
@@ -137,7 +137,8 @@ class Phoe_Woo_Rrrec_Admin {
 				$template = 'item-'.$default;
 				break;
 		}
-		include 'template/'.$template.'.php';
+
+		include 'template/'.$template.'.php' ;
 	}
 
 	public function phoe_save_order_item_action_settings()

@@ -125,7 +125,6 @@ class Phoe_Woo_Rrrec {
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'public/class-phoe-woo-rrrec-public.php';
 
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'helpers/helper.php';
-		require_once plugin_dir_path( dirname( __FILE__ ) ) .  'admin/API/admin-api.php';
 
 		$this->loader = new Phoe_Woo_Rrrec_Loader();
 
