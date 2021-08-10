@@ -118,13 +118,18 @@ class Phoe_Woo_Rrrec {
 		 */
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/class-phoe-woo-rrrec-admin.php';
 
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'helpers/admin-settings.php';
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'helpers/check-buttons-settings.php';
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'helpers/manage-customer-requests.php';
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'helpers/helper.php';
+
+
 		/**
 		 * The class responsible for defining all actions that occur in the public-facing
 		 * side of the site.
 		 */
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'public/class-phoe-woo-rrrec-public.php';
 
-		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'helpers/helper.php';
 
 		$this->loader = new Phoe_Woo_Rrrec_Loader();
 
@@ -168,11 +173,11 @@ class Phoe_Woo_Rrrec {
 		}
 
 
-		if ((isset($_GET['item_id']) && !empty($_GET['item_id']))&& (isset($_GET['order_id']) && !empty($_GET['order_id'])) ) {
+		/*if ((isset($_GET['item_id']) && !empty($_GET['item_id']))&& (isset($_GET['order_id']) && !empty($_GET['order_id'])) ) {
 			if (!isset($_GET['user_id'])) {
 				$this->loader->add_action( 'wp_loaded', $plugin_admin, 'phoe_cancel_order_item_met' );
 			}
-		}
+		}*/
 
 
 		/*if (isset($_POST['cancel_request']) && !empty($_POST['cancel_request'])) {
@@ -197,11 +202,16 @@ class Phoe_Woo_Rrrec {
 
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_styles' );
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_scripts' );
+
 		$this->loader->add_filter( 'woocommerce_locate_template', $plugin_public, 'phoe_woo_template_path' , 1 , 3);
 		$this->loader->add_filter( 'phoe_woo_order_item_action', $plugin_public, 'phoe_order_item_action_td', 10 , 2);
 		$this->loader->add_filter( 'phoe_woo_order_item_show_cancel_btn', $plugin_public, 'phoe_show_cancel_btn', 10 , 3);
 		$this->loader->add_filter( 'phoe_woo_order_item_show_refund_btn', $plugin_public, 'phoe_show_refund_btn', 10 , 3);
 		$this->loader->add_filter( 'phoe_woo_order_item_show_exchange_btn', $plugin_public, 'phoe_show_exchange_btn', 10 , 3);
+		$this->loader->add_filter( 'phoe_woo_order_item_show_btn', $plugin_public, 'phoe_add_action_item_buttons', 10 , 3);
+
+		$this->loader->add_filter( 'woocommerce_my_account_my_orders_actions', $plugin_public, 'phoe_add_action_buttons', 10 , 2);
+
 
 
 

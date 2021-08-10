@@ -5,8 +5,32 @@
 <?php require_once plugin_dir_path( dirname( __FILE__ ) ) . 'partials/admin-setting-header.php'; ?>
 
 <?php
+    $type = 'exchange';
 	$pre = 'phoe_wc_item_action';
 	$getData = get_option("phoe_order_item_actions");
+    $getData = $getData[$type];
+    $prefix = $pre .'['.$type.']';
+    $woo_statuses = wc_get_order_statuses();
+
+    $checkboxes = [
+        [
+            'id' => '_enable_item_exchange',
+            'name' => $prefix.'[_enable_item_exchange]',
+            'label' => 'Enable Exchange on Items'
+        ],
+        [
+            'id' => '_enable_order_exchange',
+            'name' => $prefix.'[_enable_order_exchange]',
+            'label' => 'Enable Exchange on Orders'
+        ],
+        [
+            'id' => '_add_product_image_on_exchange',
+            'name' => $prefix.'[_add_product_image_on_exchange]',
+            'label' => 'Add Product image for Exchange verification'
+        ]
+
+
+    ];
 ?>
 
 <form method="post">
@@ -24,41 +48,75 @@
                 </div>
             </div>
             <div class="phoe-card-body">
-                <table class="form-table">
-                    <?php
-					$type = 'exchange';
-					$prefix = $pre .'['.$type.']';
-				 ?>
-                    <tr>
-                        <?php $id = '_enable_item_exchange'; $name = $prefix.'['.$id .']'; ?>
-                        <th>
-                            <label for="<?= $id ?>"><?php _e( 'Enable Exchange Item', 'wc-item-actions' ) ?> </label>
-                        </th>
 
-                        <td>
-                            <input name="<?= $name; ?>" id="<?= $id; ?>" type="checkbox" class="" value="1"
-                            <?= isset($getData[$type][$id]) && $getData[$type][$id] == '1' ? 'checked' : '' ?>
-                            />
-                        </td>
-                    </tr>
+                <table class="wp-list-table widefat fixed striped table-view-list posts">
+                    <thead>
+                        <tr>
+                            <th><?= _e('Options', 'wc-item-actions'); ?></th>
+                            <th><?= _e('Enable', 'wc-item-actions'); ?></th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        <?php foreach ($checkboxes as $key => $check): ?>
+                            <tr>
+                                <th>
+                                    <label for="<?= $check['id']; ?>"><?php _e($check['label'], 'wc-item-actions');?></label>
+                                </th>
+                                <td>
+                                    <input name="<?= $check['name']; ?>" id="<?= $check['id']; ?>" type="checkbox" class="" value="1"
+                                    <?= isset($getData[$check['id']]) && $getData[$check['id']] == '1' ? 'checked' : '' ; ?>
+                                    />
+                                </td>
+                            </tr>
+                        <?php endforeach ?>
+                        <tr>
+                            <?php
+                                $name =  '_exchange_valid_days';
+                            ?>
+                            <th>
+                                <?= _e('Refund valid till days, after order completed.', 'wc-item-actions'); ?>
+                            </th>
+                            <td>
+                                <input type="number" placeholder="10" value="<?= isset($getData[$name]) ? $getData[$name]: ''; ?>" name="<?= $prefix.'['.$name.']'; ?>"> Days
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <th>
+                                <?= _e('Exchange on Order Status.', 'wc-item-actions'); ?>
+                            </th>
+                            <td>
+                                <?php
+                                    $name =  '_enable_exchange_on_status';
+                                ?>
+
+                                <select name="<?= $prefix.  '['.$name.']'; ?>">
+                                    <?php foreach ($woo_statuses as $key => $status): ?>
+                                        <option  <?= isset($getData[$name]) && $getData[$name] == $key ? 'selected' : '' ; ?> value="<?= $key ?>"><?= $status ?></option>
+                                    <?php endforeach ?>
+                                </select>
+                            </td>
+                        </tr>
+                    </tbody>
                 </table>
-
                 <hr />
 
-                <h2>List Reasons for Customers To Cancel.</h2>
+                <h2><?= _e('List Reasons for Customers To Cancel.', 'wc-item-actions' ) ?></h2>
                 <table class="wp-list-table widefat fixed striped table-view-list posts">
                     <thead>
                         <tr>
                             <th scope="row" style="width: 20%;">Tags</th>
-                            <th scope="row" class="reason">Reasons [Add comma seprated multiple reasons.]</th>
-                            <th style="width: 10%;"><span class="my-btn btn-b-green" onclick="addReasonRow('<?= $type ?>', '<?= $pre ?>')">Add</span></th>
+                            <th scope="row" class="reason"><?= _e('Reasons [Add comma seprated multiple reasons.]', 'wc-item-actions') ?></th>
+                            <th style="width: 10%;"><span class="my-btn btn-b-green" onclick="addReasonRow('<?= $type ?>', '<?= $pre ?>')"><?= _e('Add', 'wc-item-actions') ?></span></th>
                         </tr>
                     </thead>
                     <tbody class="<?= $type ?>-reasons">
                         <?php
 						$index = 0;
-						if (isset($getData[$type]['reason'])) {
-						foreach ($getData[$type]['reason'] as $key =>
+						if (isset($getData['reason'])) {
+						foreach ($getData['reason'] as $key =>
                         $value) { $id = '_enable_item_refund'; $name = $prefix.'['.$id .']'; ?>
                         <tr class="<?= $type.'-'. $index; ?>">
                             <th scope="row" class="titledesc">

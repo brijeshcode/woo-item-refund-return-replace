@@ -16,17 +16,12 @@
  */
 
 if (isset($_POST['request_item_action'])) {
-	if ($_POST['request_item_action'] == 'cancel') {
-		phoe_customer_order_item_request('cancel');
-	}elseif($_POST['request_item_action'] == 'refund'){
-		phoe_customer_order_item_request('refund');
-	}elseif($_POST['request_item_action'] == 'exchange'){
-		phoe_customer_order_item_request('exchange');
+	if (in_array($_POST['request_item_action'], ['exchange', 'cancel', 'refund']) ) {
+		$message = phoe_create_customer_order_item_request($_POST['request_item_action']);
+		echo '<div class="woocommerce-Message woocommerce-Message--'.$message['status'].' woocommerce-'.$message['status'].'"> '.$message['message']	.'</div>';
 	}else{
-		// lol invalid action.
 	}
 }
-
 defined( 'ABSPATH' ) || exit;
 
 $order = wc_get_order( $order_id ); // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
@@ -62,8 +57,11 @@ if ( $show_downloads ) {
 			<tr>
 				<th class="woocommerce-table__product-name product-name"><?php esc_html_e( 'Product', 'woocommerce' ); ?></th>
 				<th class="woocommerce-table__product-table product-total"><?php esc_html_e( 'Total', 'woocommerce' ); ?></th>
-				<?php if ( apply_filters( 'phoe_woo_order_item_action', true , $order) ) : ?>
-				<?php //if($order->get_status() == 'processing' && sizeof( $order->get_items() ) > 1 && !is_page('checkout')){//processing?>
+				<?php
+					$valid = apply_filters( 'phoe_woo_order_item_action', true , $order) ;
+				?>
+				<?php if ( is_array($valid) && !empty($valid)) : ?>
+
 					<th class="woocommerce-table__product-table product-total"><?php esc_html_e( 'Action', 'woocommerce' ); ?></th>
 				<?php endif; ?>
 			</tr>
@@ -104,8 +102,8 @@ if ( $show_downloads ) {
 					<?php if ( apply_filters( 'phoe_woo_order_item_action', true, $order ) ) : ?>
 
 						<?php //if($order->get_status() == 'processing' && sizeof( $order->get_items() ) > 1 && !is_page('checkout')){//processing?>
-						<td> <!-- action td --> </td>
 					<?php endif; ?>
+						<td> <!-- action td --> </td>
 					</tr>
 					<?php
 			}
@@ -134,114 +132,17 @@ do_action( 'woocommerce_after_order_details', $order );
 if ( $show_customer_details ) {
 	wc_get_template( 'order/order-details-customer.php', array( 'order' => $order ) );
 }
-
-
 ?>
 <!-- Modal -->
-<div id="myModal" class="modal fade" role="dialog">
-  <div class="modal-dialog">
-
-    <!-- Modal content-->
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal">&times;</button>
-        <h4 class="modal-title">Please Select Reason</h4>
-      </div>
-      <form method="post">
-	<?php wp_nonce_field('phoe_order_item_action_cancel', 'phoe_order_item_action_cancel_nonce_field'); ?>
-
-      	<input type="hidden" name="order_id" value="<?= $order_id; ?>">
-      	<input type="hidden" name="item_id" class="order_item_id">
-	      <div class="modal-body">
-	      	 <?php
-	      	 	if ($order->get_status() == 'processing') {
-	      	 		$type = 'cancel' ;
-	      	 	}elseif($order->get_status() == 'completed'){
-	      	 		$type = 'exchange';
-	      	 	}
-	      	 	$reasons = get_item_reasons($type);
-	      	 ?>
-	      	 <div>
-	      	 	<?php foreach ($reasons as $key => $value): ?>
-	      	 		<tags onclick="show_my_reasons('<?= sanitize_title($value['tag']); ?>' , '<?= $value['tag'] ?>')"><?= $value['tag'] ?></tags>
-	      	 	<?php endforeach ?>
-	      	 </div>
-	      	<hr>
-	      	<h2 class="selected-reason"></h2>
-	        <ul class="list-group">
-	        	<?php foreach ($reasons as $key => $value): ?>
-	 				<?php foreach (explode(',', $value['reasons']) as $reasonVal): ?>
-	        		<li class="list-group-item reason-items <?= sanitize_title($value['tag']) ?> ">
-	        			<label> <input type="radio" name="reason" value="<?= $value['tag'].' | '.$reasonVal ?>"><?= $reasonVal ?></label>
-	        		</li>
-	 				<?php endforeach ?>
-
-	        	<?php endforeach ?>
-	        </ul>
-	      </div>
-	      <div class="modal-footer">
-	      	<input type="hidden" name="request_item_action" id="request_item_action" value="cancel">
-	        <button type="submit" class="btn btn-primary" value="cancel_request">Submit</button>
-	        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-	      </div>
-      </form>
-    </div>
-
-  </div>
-</div>
 
 
 <?php if ($order->get_status() == 'completed'): ?>
-
-<div id="refund" class="modal fade" role="dialog">
-  <div class="modal-dialog">
-
-    <!-- Modal content-->
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal">&times;</button>
-        <h4 class="modal-title">Please Select Reason</h4>
-      </div>
-      <form method="post">
-	<?php wp_nonce_field('phoe_order_item_action_cancel', 'phoe_order_item_action_cancel_nonce_field'); ?>
-
-      	<input type="hidden" name="order_id" value="<?= $order_id; ?>">
-      	<input type="hidden" name="item_id" class="order_item_id">
-	      <div class="modal-body">
-	      	 <?php
-	      	 	$type = 'refund';
-	      	 	$reasons = get_item_reasons($type);
-	      	 ?>
-	      	 <div>
-	      	 	<?php foreach ($reasons as $key => $value): ?>
-	      	 		<tags onclick="show_my_reasons('<?= sanitize_title($value['tag']); ?>' , '<?= $value['tag'] ?>')"><?= $value['tag'] ?></tags>
-	      	 	<?php endforeach ?>
-	      	 </div>
-	      	<hr>
-	      	<h2 class="selected-reason"></h2>
-	        <ul class="list-group">
-	        	<?php foreach ($reasons as $key => $value): ?>
-	 				<?php foreach (explode(',', $value['reasons']) as $reasonVal): ?>
-	        		<li class="list-group-item reason-items <?= sanitize_title($value['tag']) ?> ">
-	        			<label> <input type="radio" name="reason" value="<?= $value['tag'].' | '.$reasonVal ?>"><?= $reasonVal ?></label>
-	        		</li>
-	 				<?php endforeach ?>
-
-	        	<?php endforeach ?>
-	        </ul>
-	      </div>
-	      <div class="modal-footer">
-	      	<input type="hidden" name="request_item_action" value="refund">
-	        <button type="submit" class="btn btn-primary" value="cancel_request">Submit</button>
-	        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-	      </div>
-      </form>
-    </div>
-
-  </div>
-</div>
-
+<?php require_once plugin_dir_path(dirname(dirname(dirname(__FILE__)))).'partials/phoe-refund-reason-model.php'; ?>
+<?php require_once plugin_dir_path(dirname(dirname(dirname(__FILE__)))).'partials/phoe-exchange-reason-model.php'; ?>
+<?php else: ?>
+<?php require_once plugin_dir_path(dirname(dirname(dirname(__FILE__)))).'partials/phoe-cancel-reason-model.php'; ?>
 <?php endif ?>
+
 <style type="text/css">
 tags {
     background: #d9edf7;
@@ -260,13 +161,15 @@ tags {
 </style>
 
 <script type="text/javascript">
+
 	function show_my_reasons(type, tag){
 		jQuery('.reason-items').hide();
 		jQuery('.selected-reason').text(tag);
 		jQuery('.'+ type).show();
 	}
 
-	function add_request_data(item_id, actionType){
+	function add_request_data(order_id, item_id, actionType){
+		jQuery('.order_id').val(order_id);
 		jQuery('.order_item_id').val(item_id);
 		jQuery('#request_item_action').val(actionType);
 	}

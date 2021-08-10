@@ -88,9 +88,9 @@ class Phoe_Woo_Rrrec_Admin {
 		}
 	}
 
-	public function phoe_cancel_order_item_met() {
+	/*public function phoe_cancel_order_item_met() {
 		phoe_cancel_order_item();
-	}
+	}*/
 
 
 	public function woo_item_action_menu()
@@ -102,41 +102,24 @@ class Phoe_Woo_Rrrec_Admin {
 
 	public function phoe_wc_item_action_menu() {
 		$default = 'refund';
-		$tab = isset($_GET['tab']) ? $_GET['tab'] : $default; // default
-		$template = '';
+		$selecteTab = isset($_GET['tab']) ? $_GET['tab'] : $default; // default
 
-		switch ($tab) {
-			case 'cancel':
-				$template = 'item-cancel';
-				break;
+		$tabs = [
+			'cancel' => 'item-cancel' ,
+		 	'cancel-setting'=> 'setting-cancel',
+		 	'cancel-order'=> 'order-cancel',
 
-			case 'cancel-setting':
-				$template = 'setting-cancel';
-				break;
+		 	'refund'=> 'item-refund',
+		 	'refund-setting'=> 'setting-refund',
+		 	'refund-order'=> 'order-refund',
 
-			case 'refund':
-				$template = 'item-refund';
-				break;
+		 	'replace'=> 'item-replace',
+		 	'replace-setting'=> 'setting-replace',
+		 	'replace-order'=> 'order-replace',
+		 	'settings'=> 'item-settings',
+		];
 
-			case 'refund-setting':
-				$template = 'setting-refund';
-				break;
-
-			case 'replace':
-				$template = 'item-replace';
-				break;
-
-			case 'replace-setting':
-				$template = 'setting-replace';
-				break;
-
-			case 'settings':
-				$template = 'item-settings';
-				break;
-			default:
-				$template = 'item-'.$default;
-				break;
-		}
+		$template = isset($tabs[$selecteTab]) ? $tabs[$selecteTab] : 'invalid-tab';
 
 		include 'template/'.$template.'.php' ;
 	}

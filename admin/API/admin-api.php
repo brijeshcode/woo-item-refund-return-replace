@@ -161,7 +161,7 @@ if ( !in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', 
 		$order_id = $_GET['order_id'];
 		$item_id = $_GET['item_id'];
 
-		$data = phoe_getItemCancelStatus($order_id, $item_id);
+		$data = phoe_getRequestStatus($order_id, $item_id);
 
 		$response = ['status' => 1];
 		$response['data'] = $data ;
@@ -212,7 +212,7 @@ if ( !in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', 
         $reason = $_POST['reason'];
 
 		if (function_exists('insertNewRequest')) {
-			if (is_req_exist($type , $order_id, $cancel_item_id)) {
+			if (is_req_exist($type , $order_id, 'Item', $cancel_item_id)) {
 				$response = ['status' => 0];
 				$response['data'] = 'Request allready in system.';
 				$response['res_type'] = '208';

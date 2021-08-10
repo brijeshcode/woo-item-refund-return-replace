@@ -53,17 +53,18 @@ class Phoe_Woo_Rrrec_Public
         return $template;
     }
 
+    // called by filter
     public function phoe_order_item_action_td($show, $order)
     {
+        /*$actions = $this->phoe_add_action_item_buttons($order);
+
+        if (is_array($actions) && !empty($actions)) {
+            return $actions;
+        }*/
+
+        //td to show order action
         $getData = get_option("phoe_order_item_actions");
 
-        if (!isset($getData['exchange']['_enable_item_exchange']) && !isset($getData['refund']['_enable_item_refund'])) {
-            return false;
-        }
-
-        if (isset($getData['exchange']['_enable_item_exchange']) && !$getData['exchange']['_enable_item_exchange'] && (isset($getData['refund']['_enable_item_refund']) && !$getData['refund']['_enable_item_refund'])) {
-            return false;
-        }
 
         $order_items = $order->get_items();
         $order_id = $order->get_id();
@@ -80,33 +81,15 @@ class Phoe_Woo_Rrrec_Public
                 continue;
             }
 
-            $req_status = phoe_getItemCancelStatus($order_id, $item_id);
+            $req_status = phoe_getRequestStatus($order_id, $item_id);
             if ($req_status) {
                 return true;
             }
         }
-
-        $orderStatus = $order->get_status();
-        if (!in_array($orderStatus, ['completed', 'processing'])) {
-            return false;
-        }
-
-        if ($orderStatus == 'processing') {
-            if (!isset($getData['cancel']['_enable_item_cancel'])) {
-                return false;
-            }
-
-            if (isset($getData['cancel']['_enable_item_cancel']) && !$getData['cancel']['_enable_item_cancel']) {
-                return false;
-            }
-        }
-
-        if ($orderStatus == 'processing' && sizeof($order->get_items()) > 1 && !is_page('checkout')) {
-            return true;
-        }
         return $show;
     }
 
+    // called by filter
     public function phoe_show_cancel_btn($show, $order, $item_id)
     {
         $orderStatus = $order->get_status();
@@ -131,7 +114,7 @@ class Phoe_Woo_Rrrec_Public
             return true;
         }
 
-        $req_status = phoe_getItemCancelStatus($order_id, $item_id);
+        $req_status = phoe_getRequestStatus($order_id, $item_id);
 
         if ($req_status) {
             return true;
@@ -140,6 +123,8 @@ class Phoe_Woo_Rrrec_Public
         return false;
     }
 
+
+    // called by filter
     public function phoe_show_refund_btn($show, $order, $item_id)
     {
         $getData = get_option("phoe_order_item_actions");
@@ -150,7 +135,7 @@ class Phoe_Woo_Rrrec_Public
         $orderStatus = $order->get_status();
 
         $order_id = $order->get_id();
-        $req_status = phoe_getItemCancelStatus($order_id, $item_id);
+        $req_status = phoe_getRequestStatus($order_id, $item_id);
         // if item is cancelled
         if ($req_status) {
             return false;
@@ -169,6 +154,7 @@ class Phoe_Woo_Rrrec_Public
         return $show;
     }
 
+    // called by filter
     public function phoe_show_exchange_btn($show, $order, $item_id)
     {
         $getData = get_option("phoe_order_item_actions");
@@ -179,7 +165,7 @@ class Phoe_Woo_Rrrec_Public
         $orderStatus = $order->get_status();
 
         $order_id = $order->get_id();
-        $req_status = phoe_getItemCancelStatus($order_id, $item_id);
+        $req_status = phoe_getRequestStatus($order_id, $item_id);
         // if item is cancelled
         if ($req_status) {
             return false;
@@ -196,5 +182,50 @@ class Phoe_Woo_Rrrec_Public
             return true;
         }
         return false;
+    }
+
+    public function phoe_add_action_buttons($action , $order)
+    {
+        $status = $order->get_status();
+        if (in_array($status, ['cancelled', 'refunded'])) return $action;
+
+        $order_id = $order->get_id();
+        $types = ['refund', 'cancel', 'exchange'];
+        foreach ($types as $key => $type) {
+            if (canShowPhoeOrderBtns($order, $type)) {
+                $action[$type]  = [
+                    'url' => '',
+                    'name' => ucfirst($type),
+                    'id' => $type,
+                    'order_id' => $order_id
+                ];
+            }
+        }
+
+        return $action;
+    }
+
+    public function phoe_add_action_item_buttons( $btns, $order, $item_id)
+    {
+        $btns = array();
+        $status = $order->get_status();
+
+        if (in_array($status, ['cancelled', 'refunded'])) return $btns;
+
+        $order_id = $order->get_id();
+
+        $types = ['refund', 'cancel', 'exchange'];
+        foreach ($types as $key => $type) {
+            if (canShowOrderItemBtns($order, $item_id, $type)) {
+                $btns[$type]  = [
+                    'url' => '',
+                    'name' => ucfirst($type),
+                    'id' => $type,
+                    'order_id' => $order_id
+                ];
+            }
+        }
+
+        return $btns;
     }
 }

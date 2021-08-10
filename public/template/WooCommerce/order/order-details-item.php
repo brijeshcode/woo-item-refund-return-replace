@@ -55,35 +55,22 @@ if ( ! apply_filters( 'woocommerce_order_item_visible', true, $item ) ) {
 	<td class="woocommerce-table__product-total product-total">
 		<?php echo $order->get_formatted_line_subtotal( $item ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 	</td>
+	<?php
+		$btns = apply_filters( 'phoe_woo_order_item_show_btn', $buttons = [], $order,$item_id );
+	 ?>
 
-	<?php if ( apply_filters( 'phoe_woo_order_item_action', true, $order ) ) : ?>
 	<td class="woocommerce-table__product-action product-action">
-
-		<?php if ( apply_filters( 'phoe_woo_order_item_show_cancel_btn', true, $order, $item_id )): ?>
-			<?php
-				$req_status = phoe_getItemCancelStatus($order_id, $item_id);
-			?>
-			<?php if ( $req_status ): ?>
-				<?php esc_html_e( $req_status , 'woocommerce' ); ?>
-
-			<?php else: ?>
-				<a href="javascript:void(0)" class="button" onclick="add_request_data('<?= $item_id ?>', 'cancel')"><span  data-toggle="modal" data-target="#myModal" ><?php esc_html_e( 'Cancel', 'woocommerce' ); ?></span></a>
-				<!-- <a href="?item_id=<?= $item_id; ?>&order_id=<?= $order_id ?>"  class="button"><?php esc_html_e( 'Cancel', 'woocommerce' ); ?></a> -->
-			<?php endif ?>
-		<?php endif ?>
-
-		<?php if ( apply_filters( 'phoe_woo_order_item_show_refund_btn', true, $order,$item_id )): ?>
-				<?php $btnText = 0 ? 'Return' : 'Refund'; ?>
-				<a href="javascript:void(0)" class="button" onclick="add_request_data('<?= $item_id ?>', 'refund')"><span  data-toggle="modal" data-target="#refund" ><?php esc_html_e( $btnText, 'woocommerce' ); ?></span></a>
-		<?php endif  ?>
-
-		<?php if ( apply_filters( 'phoe_woo_order_item_show_exchange_btn', true, $order,$item_id )): ?>
-				<?php $btnText = 0 ? 'Replace' : 'Exchange'; ?>
-				<a href="javascript:void(0)" class="button" onclick="add_request_data('<?= $item_id ?>', 'exchange')"><span  data-toggle="modal" data-target="#myModal" ><?php esc_html_e( $btnText, 'woocommerce' ); ?></span></a>
-
-		<?php endif  ?>
-	</td>
+	<?php if (is_array($btns) && !empty($btns)) : ?>
+		<?php foreach ($btns as $key => $value):  ?>
+			<a href="<?= $value['url']; ?>" class="button" onclick="add_request_data('<?= $order_id ?>', '<?= $item_id ?>', '<?= $value['id']; ?>')" data-toggle="modal" data-target="#<?= $value['id'] ?>" ><?php esc_html_e( $value['name'], 'woocommerce' ); ?></a>
+		<?php endforeach ?>
+	<?php else: ?>
+		<?php
+			$requestStatus = phoe_getRequestStatus($order_id , $item_id);
+		?>
+		<span><?= $requestStatus ?></span>
 	<?php endif; ?>
+ 	</td>
 </tr>
 
 <?php if ( $show_purchase_note && $purchase_note ) : ?>
@@ -96,5 +83,3 @@ if ( ! apply_filters( 'woocommerce_order_item_visible', true, $item ) ) {
 <?php endif; ?>
 
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
-
-

@@ -1,69 +1,12 @@
 <?php
 	// todo : check if givien order id is of the given user ?
 	// return status for order item
-	function phoe_getItemCancelStatus($order_id, $item_id, $text = true)
-	{
-		global $wpdb;
-        $tb = $wpdb->prefix . "phoe_order_item_request";
-        $query = " SELECT request_type, request_status FROM $tb where order_id = $order_id AND item_id = $item_id limit 1";
-
-        $result = $wpdb->get_row($query);
-
-        if (empty($result)) {
-        	return false;
-        }
-        if ($text) {
-            if ($result->request_type == 'Cancel') {
-                if ($result->request_status == 'Submitted') {
-                    $status = 'Cancel Requested';
-                    return  $status;
-                }elseif ($result->request_status == 'Denied') {
-                    return 'Cancel Denied';
-                }else{
-                    return 'Cancelled';
-                }
-            }
-
-            if ($result->request_type == 'Refund') {
-                if ($result->request_status == 'Submitted') {
-                    return 'Refund Requested';
-                }elseif ($result->request_status == 'Denied') {
-                    return 'Refund Denied';
-                }else{
-                    return 'Refunded';
-                }
-            }
-
-            if ($result->request_type == 'Exchange') {
-                if ($result->request_status == 'Submitted') {
-                    return 'Exchange Requested';
-                }elseif ($result->request_status == 'Denied') {
-                    return 'Exchange Denied';
-                }else{
-                    return 'Exchanged';
-                }
-            }
-        }
-        return $result['request_status'];
-	}
-
-    function phoe_count_order_item_acted($order_id)
-    {
-        global $wpdb;
-        $tb = $wpdb->prefix . "phoe_order_item_request";
-        $query = " SELECT * FROM $tb where order_id = $order_id";
-
-        $result = $wpdb->get_results($query);
 
 
-        if (empty($result)) {
-            return 0;
-        }else{
-            return count($result);
-        }
-    }
 
-    function phoe_cancel_order_item($order_id = '', $cancel_item_id = '', $calledby ='api') {
+
+
+    /*function phoe_cancel_order_item($order_id = '', $cancel_item_id = '', $calledby ='api') {
         return '';  // no refund
         die('logic fail');
         if (isset($_GET['user_id']) && !empty($_GET['user_id'])) {
@@ -140,54 +83,27 @@
              $order->save();
         }
         return 'Completed';
-    }
+    }*/
 
-    function insertNewRequest($type = "Cancel", $order_id, $item_id, $reason, $autoApproved  = false ){
-        if (is_req_exist($type , $order_id, $cancel_item_id)) {
-            return 'Already Cancelled';
-        }
-        $status = 'Submitted';
-        if ( $autoApproved ) {
-            $status = 'Completed';
-        }
 
-        $arrPara = [
-            'order_id' => $order_id,
-            'item_id' => $item_id,
-            'request_type' => $type,
-            'request_status' => $status,
-            'request_type' => $type,
-            'request_reason' => $reason,
-        ];
 
-        global $wpdb;
-        $tb = $wpdb->prefix . "phoe_order_item_request";
-        $wpdb->insert($tb, $arrPara);
-        $id = $wpdb->insert_id;
-        return $id;
-    }
 
-    function  is_req_exist($type, $order_id, $item_id){
-        global $wpdb;
-        $tb = $wpdb->prefix . "phoe_order_item_request";
-        $query = " SELECT * FROM $tb where order_id = $order_id AND item_id = $item_id and request_type = '$type' ";
 
-        $result = $wpdb->get_row($query);
-
-        if (empty($result)) {
-            return false;
-        }
-        return true;
-    }
+    /*------------------till here -----------------*/
 
     function refundForCancel($order, $cancel_item_id, $reason)
     {
         return phoe_refundItemAmount($type = 'Cancled', $order, $cancel_item_id, $reason);
     }
 
+    function phoe_orderRefund(){
+        //p
+    }
+
     function phoe_refundItemAmount($type = 'Cancled', $order, $cancel_item_id, $reason)
     {
         $order_id = $order->get_id();
+
         //
         $order_items   = $order->get_items();
         // Refund Amount
@@ -203,7 +119,6 @@
             }
 
             $itemData = $item->get_data();
-
             $refund_amount = wc_format_decimal( $refund_amount ) + wc_format_decimal( $itemData['total'] ) + wc_format_decimal( $itemData['total_tax'] );
 
             $line_items[ $item_id ] = array(
@@ -229,186 +144,207 @@
         }
     }
 
-    function get_item_reasons($type = 'refund'){
-        $getData = get_option("phoe_order_item_actions");
-        if (isset($getData[$type]['reason'])) {
-            // echo "<pre>"; print_r($getData[$type]['reason']); echo "</pre>"; die();
-            return $getData[$type]['reason'];
-        }
-    }
-
-    function get_cancel_requests( $request_id = ''){
-        global $wpdb;
-        $tb = $wpdb->prefix . "phoe_order_item_request";
-        $con = '';
-        if ($request_id != '') {
-            $con = " AND $tb.id = $request_id ";
-        }
-        $query = "
-            SELECT *, i.order_item_name FROM $tb
-            join wp_woocommerce_order_items i on i.order_item_id = $tb.item_id
-            where request_type = 'Cancel' $con
-            Order by  $tb.created_at asc
-
-        ";
-
-        $result = $wpdb->get_results($query);
-        if (empty($result)) {
-            return false;
-        }
-        return $result ;
-    }
-
-    function get_customer_order_item_requests($type = 'Cancel',  $request_id = ''){
-        global $wpdb;
-        $tb = $wpdb->prefix . "phoe_order_item_request";
-        $con = '';
-        if ($request_id != '') {
-            $con = " AND $tb.id = $request_id ";
-        }
-        $query = "
-            SELECT *, i.order_item_name FROM $tb
-            join wp_woocommerce_order_items i on i.order_item_id = $tb.item_id
-            where request_type = '{$type}' $con
-            Order by  $tb.created_at asc
-        ";
-
-        $result = $wpdb->get_results($query);
-        if (empty($result)) {
-            return false;
-        }
-        return $result ;
-    }
-
     // request by customre
-    function phoe_customer_order_item_request($type){
+    function phoe_create_customer_order_item_request($type = ''){
         // $order_id, $cancel_item_id;
-        if (empty($type))
-        return '';
-
-        if (!isset($_POST['order_id']) || empty($_POST['order_id']))
-        return '';
-
-        if (!isset($_POST['reason']) || empty($_POST['reason']))
-        return '';
-
-        if (!isset($_POST['item_id']) || empty($_POST['item_id']))
-        return '';
-
-        if (!isset($_POST['request_item_action']) || empty($_POST['request_item_action']))
-        return '';
-
-        if ($_POST['request_item_action'] != $type)
-        return '';
+        $valid = validateCustomerItemRequest();
+        if (true !==  $valid) {
+            return $valid;
+        }
 
         $item_id = $_POST['item_id'];
         $order_id = $_POST['order_id'];
+        $reason = $_POST['reason'];
 
-        if (is_req_exist(ucfirst($type) , $order_id, $item_id)) {
-            return ucfirst($type).' request already there.';
+        insertNewRequest(ucfirst($type), $order_id, $item_id, $reason, $autoApproved = false );
+        $data = [
+            'status' => 'info',
+            'message' => 'Request Submmited Successfull.'
+        ];
+        return $data;
+    }
+
+    function phoe_create_customer_order_request($type = ''){
+        // $order_id, $cancel_item_id;
+        $valid = validateCustomerItemRequest();
+        if (true !==  $valid) {
+            return $valid;
         }
 
+        $order_id = $_POST['order_id'];
         $reason = $_POST['reason'];
-        insertNewRequest(ucfirst($type), $order_id, $item_id, $reason, $autoApproved = false );
+
+        insertNewRequest(ucfirst($type), $order_id, '', $reason, $autoApproved = false );
+        $data = [
+            'status' => 'info',
+            'message' => 'Request Submmited Successfull.'
+        ];
+        return $data;
+    }
+
+
+
+    function validateCustomerItemRequest()
+    {
+        $data = [
+            'status' => 'error',
+            'message' => 'Someting went wrong. Sorry request cannot be process'
+        ];
+
+        $type  = $_POST['request_item_action'];
+        if (empty($type)) return $data;
+
+        $data['message'] = 'Something went wrong. Order not found.';
+        if (!isset($_POST['order_id']) || empty($_POST['order_id'])) return $data;
+
+
+        $data['message'] = 'Something went wrong. Invalid request made.';
+        if (!isset($_POST['request_item_action']) || empty($_POST['request_item_action'])) return $data;
+
+
+        if (isset($_POST['request_for']) && empty($_POST['request_for'])) {
+            $data['message'] = 'Please select valid Item.';
+            if (!isset($_POST['item_id']) || empty($_POST['item_id'])) return $data;
+        }
+
+        $data['message'] = 'Please select a valid reason.';
+        if (!isset($_POST['reason']) || empty($_POST['reason'])) return $data;
+
+        if (isset($_POST['request_for']) && !empty($_POST['request_for'])) {
+
+            if (is_req_exist(ucfirst($type) ,$_POST['order_id'], $_POST['request_for'],  $_POST['item_id'])) {
+                $data['message'] = ucfirst($type).' request already there.';
+                return $data;
+            }
+        }else{
+            if (is_req_exist(ucfirst($type) ,$_POST['order_id'], 'Item', $_POST['item_id'])) {
+                $data['message'] = ucfirst($type).' request already there.';
+                return $data;
+            }
+        }
+
+        return true;
     }
 
     // approve refund requert by admin
     function phoe_admin_approve_order_item_request($requestId, $type = 'Cancel'){
+
+        /* continue from here  ------------------*/
+        $data = get_customer_order_item_requests($type, $requestId);
+        echo "<pre>"; print_r($data); echo "</pre>"; die();
+        $data = $data[0];
+        $order = wc_get_order($data->order_id);
+        $item_id = $data->item_id;
+        $reason = $data->request_reason;
+        $order_items = $order->get_items();
+        $refund = array();
+
+        $updated = phoe_change_request_status($requestId, 'Completed');
+        if ($updated) {
+            if ($type != 'Exchange') {
+                phoe_refundItemAmount($type, $order, $item_id, $reason);
+            }
+            // add admin note on order
+            phoe_request_order_note($type, $requestId);
+        }else{
+            return 'request not found ';
+        }
+    }
+
+    // Denied cancel requert by admin
+    function phoe_admin_item_request_change_status($requestId, $action, $type = 'Cancel'){
         // only admin allow to perform this action
+        $valid = phoe_validate_admin_action($type, $requestId);
+        if (false !==  $valid) return $valid;
+
+        if ($action == 'Completed') {
+            phoe_admin_approve_order_item_request($requestId, $type);
+        }else{
+            if (phoe_change_request_status($requestId, $action)) {
+                phoe_request_order_note($type, $requestId);
+            }
+        }
+    }
+
+    function phoe_validate_admin_action($type, $requestId){
+        $error = [
+            'status' => 'error',
+            'message' => 'Someting went wrong. Sorry request cannot be process'
+        ];
+
         if (!is_admin()) {
-            return 'not allowed';
+            $error['message'] = 'Unauthorized access.';
+            return $error;
         }
 
         $data = get_customer_order_item_requests($type, $requestId);
 
         if (empty($data)) {
-            return 'No request found on given request id || invalid request id';
+            $error['message'] = 'No request found on given request id || Invalid request id';
+            return $error;
         }
-        if ($data[0]->request_status != 'Submitted') {
-            return 'invalid request.';
+
+        if (!in_array($data[0]->request_status, requestsOptions())) {
+            $error['message'] = 'Invalid request status. ' .$data[0]->request_status ;
+            return $error;
         }
 
         if ($data[0]->request_type != $type) {
-            return 'invalid request.';
+            $error['message'] = 'Invalid request.';
+            return $error;
         }
 
-        $order = wc_get_order($data[0]->order_id);
-        $item_id = $data[0]->item_id;
-        $reason = $data[0]->request_reason;
-        $order_items = $order->get_items();
-        $refund = array();
+        return false;
+    }
 
-        global $wpdb;
-        $tb = $wpdb->prefix . "phoe_order_item_request";
-        $where = ['id' => $requestId];
-        $data = ['request_status' => 'Completed'];
+    function phoe_request_order_note($type, $requestId){
 
-        $updated = $wpdb->update( $tb, $data, $where );
-        if ($type != 'Exchange') {
-            phoe_refundItemAmount($type, $order, $item_id, $reason);
-        }
+        $data = get_customer_order_item_requests($type, $requestId);
+        $data = $data[0];
+        if ($data->request_status != 'Denied')  return '';
 
 
-        // add note to order for cancel request
-        foreach ($order_items as $item_id => $item) {
+        $order = wc_get_order($data->order_id);
+        $item_id = $data->item_id;
 
-            if ($item_id != $item_id || $item->get_type() != 'line_item') {
+        foreach ($order_items as $item_key => $item) {
+
+            if ($item_key != $item_id || $item->get_type() != 'line_item') {
                 continue;
             }
 
             $name = $item->get_name();
-            $note = " Admin Approved customer {$type} request for Item, Name: {$name} from the order.";
+
+            $note = " Admin {$data->request_status} customer {$type} request for Item, Name: {$name} from the order.";
             $order->add_order_note( $note );
             $order->save();
             break;
         }
-
     }
 
-    // Denied cancel requert by admin
-    function phoe_admin_denied_order_item_request($requestId, $type = 'Cancel'){
-        // only admin allow to perform this action
-        if (!is_admin()) {
-            return 'Unauthorized access.';
+
+    function requestForm($item_id, $currentStatus){
+        $c_html = '';
+        $c_html .= '<form>';
+        $c_html .= '<input type="hidden" value="' . $item_id . '" name="item_id">';
+        $c_html .= '<input type="hidden" value="phoe-wc-item-action" name="page">';
+        $c_html .= '<input type="hidden" value="'.$_GET['tab'].'" name="tab">';
+
+        $request_actions = requestsOptions();
+        $c_html .= '<select name="action"  onchange="if(confirm(\'Continue?\')){this.form.submit()}">';
+        foreach ($request_actions as $key => $request) {
+            $selected = $currentStatus == $request ? 'selected' : '';
+            $c_html .= '<option value="' .$request . '" '.$selected.' >' . $request . '</option>' ;
         }
+        $c_html .= '</select>';
+        $c_html .= '';
+        $c_html .= '</form>';
+        $c_html .= '';
 
-        $data = get_cancel_requests($requestId);
-        if (empty($data)) {
-            return 'No request found on given request id || Invalid request id';
-        }
-
-        if ($data[0]->request_status != 'Submitted') {
-            return 'invalid request.';
-        }
-
-        if ($data[0]->request_type != $type) {
-            return 'invalid request.';
-        }
-
-        global $wpdb;
-        $tb = $wpdb->prefix . "phoe_order_item_request";
-        $where = ['id' => $requestId];
-        $data = ['request_status' => 'Denied'];
-        $updated = $wpdb->update( $tb, $data, $where );
-        if ($updated) {
-            $data = get_cancel_requests($requestId);
-            $order = wc_get_order($data[0]->order_id);
-            $item_id = $data[0]->item_id;
-            $order_items   = $order->get_items();
-            foreach ($order_items as $item_id => $item) {
-
-                if ($item_id != $item_id || $item->get_type() != 'line_item') {
-                    continue;
-                }
-
-                $name = $item->get_name();
-                $note = " Admin Denied customer {$type} request for Item, Name: {$name} from the order.";
-                $order->add_order_note( $note );
-                $order->save();
-                break;
-            }
-        }
-
+        return $c_html;
     }
 
+    function requestsOptions(){
+        return ['Requested', 'Processing','Completed','Denied'];
+    }
 ?>

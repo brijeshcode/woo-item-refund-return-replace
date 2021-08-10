@@ -22,7 +22,7 @@
         <?php if (!isset($_GET['tab']) && $para == 'refund'): ?>
             <a href="<?= $pluginSlug.$para; ?>" class="nav-tab nav-tab-active ?> "><?= $tab; ?></a>
         <?php else: ?>
-            <a href="<?= $pluginSlug.$para; ?>" class="nav-tab <?=  $para == $_GET['tab'] ||  $para. '-setting' == $_GET['tab'] ?'nav-tab-active': ''  ?> "><?= $tab; ?></a>
+            <a href="<?= $pluginSlug.$para; ?>" class="nav-tab <?=  $para == $_GET['tab'] ||  $para. '-setting' == $_GET['tab'] ||  $para. '-order' == $_GET['tab'] ?'nav-tab-active': ''  ?> "><?= $tab; ?></a>
         <?php endif ?>
     <?php endforeach ?>
 </nav>

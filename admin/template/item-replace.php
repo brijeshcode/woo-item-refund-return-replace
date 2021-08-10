@@ -1,22 +1,38 @@
 <?php
 	require_once plugin_dir_path(dirname(__FILE__)) . 'partials/admin-setting-header.php';
-	$response = '';
+	$type = 'Exchange';
 
-	if (isset($_GET['action']) && $_GET['action'] == 'approve' && isset($_GET['item_id'])) {
-	    $response = phoe_admin_approve_order_item_request($_GET['item_id'], 'Exchange');
-	}
+if (isset($_GET['action']) &&  isset($_GET['item_id'])) {
+    phoe_admin_item_request_change_status($_GET['item_id'], $_GET['action'], $type);
+}
 
-	if (isset($_GET['action']) && $_GET['action'] == 'denied' && isset($_GET['item_id'])) {
-	    $response = phoe_admin_denied_order_item_request($_GET['item_id'], 'Exchange');
-	}
-	echo $response;
-	$cancelRequests = get_customer_order_item_requests('Exchange');
+	$cancelRequests = get_customer_order_item_requests($type);
 ?>
 <div class="phoe-card w-95">
 <div class="phoe-card-header">
 	<div class="row">
 		<div class="col-6">
-			<h2><?php _e('Requests', 'wc-item-actions'); ?> </h2>
+			<h2>
+				<?php _e('Requests', 'wc-item-actions'); ?>
+
+				<?php
+                        _e('Items', 'wc-item-actions' );
+                        $itemCount = phoe_count_incomplete_requests($type, 'Item');
+                    ?>
+                    <?php if ($itemCount > 0): ?>
+                         <span class="requests-count"><?= $itemCount ?></span>
+                    <?php endif ?>
+                        |
+                    <a href="<?= add_query_arg(['tab' => 'replace-order']) ?>"><?php _e('Orders', 'wc-item-actions' ); ?></a>
+
+                    <?php
+                        $orderCount = phoe_count_incomplete_requests($type, 'Order');
+                    ?>
+
+                    <?php if ($orderCount > 0): ?>
+                         <span class="requests-count"><?= $orderCount ?></span>
+                    <?php endif ?>
+			</h2>
 		</div>
 		<div class="col-6 text-right"><h2><a href="<?= add_query_arg(['tab' => 'replace-setting']) ?>">Settings</a></h2></div>
 	</div>

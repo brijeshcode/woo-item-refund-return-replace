@@ -5,8 +5,44 @@
 <?php require_once plugin_dir_path( dirname( __FILE__ ) ) . 'partials/admin-setting-header.php'; ?>
 
 <?php
+
 	$pre = 'phoe_wc_item_action';
+    $type = 'cancel';
+
 	$getData = get_option("phoe_order_item_actions");
+
+    $getData = $getData[$type] ;
+    $woo_statuses = wc_get_order_statuses();
+
+    $prefix = $pre .'['.$type.']';
+
+    $checkboxes = [
+        [
+            'id' => '_enable_item_cancel',
+            'name' => $prefix.'[_enable_item_cancel]',
+            'label' => 'Enable cancel on Items'
+        ],
+        [
+            'id' => '_enable_order_cancel',
+            'name' => $prefix.'[_enable_order_cancel]',
+            'label' => 'Enable cancel on Orders'
+        ],
+        /*[
+            'id' => '_include_shipping_charges_on_cancel',
+            'name' => $prefix.'[_include_shipping_charges_on_cancel]',
+            'label' => 'Include Shipping charges in cancel amount'
+        ],
+        [
+            'id' => '_include_cod_charges_on_cancel',
+            'name' => $prefix.'[_include_cod_charges_on_cancel]',
+            'label' => 'Include COD charges in cancel amount'
+        ],*/
+        [
+            'id' => '_cancel_in_same_source',
+            'name' => $prefix.'[_cancel_in_same_source]',
+            'label' => 'Cancel to same source'
+        ]
+    ];
 ?>
 
 <form method="post">
@@ -24,27 +60,51 @@
                 </div>
             </div>
             <div class="phoe-card-body">
-                <?php
-					$type = 'cancel';
-					$prefix = $pre .'['.$type.']';
-				 ?>
-                <table class="form-table">
-                    <tr>
-                        <?php $id = '_enable_item_cancel'; $name = $prefix.'['.$id .']'; ?>
-                        <th>
-                            <label for="<?= $id ?>"><?php _e( 'Enable', 'wc-item-actions' ) ?> </label>
-                        </th>
+                <table class="wp-list-table widefat fixed striped table-view-list posts">
+                    <thead>
+                        <tr>
+                            <th><?= _e('Options', 'wc-item-actions'); ?></th>
+                            <th><?= _e('Enable', 'wc-item-actions'); ?></th>
+                        </tr>
+                    </thead>
 
-                        <td>
-                            <input name="<?= $name; ?>" id="<?= $id; ?>" type="checkbox" class="" value="1"
-                            <?= isset($getData[$type][$id]) && $getData[$type][$id] == '1' ? 'checked' : '' ?>
-                            />
-                        </td>
-                    </tr>
+                    <tbody>
+
+                        <?php foreach ($checkboxes as $key => $check): ?>
+                            <tr>
+                                <th>
+                                    <label for="<?= $check['id']; ?>"><?php _e($check['label'], 'wc-item-actions');?></label>
+                                </th>
+                                <td>
+                                    <input name="<?= $check['name']; ?>" id="<?= $check['id']; ?>" type="checkbox" class="" value="1"
+                                    <?= isset($getData[$check['id']]) && $getData[$check['id']] == '1' ? 'checked' : '' ; ?>
+                                    />
+                                </td>
+                            </tr>
+                        <?php endforeach ?>
+
+                        <tr>
+                            <th>
+                                <?= _e('Cancel on Order Status.', 'wc-item-actions'); ?>
+                            </th>
+                            <td>
+                                <?php
+                                    $name =  '_enable_cancel_on_status';
+
+                                ?>
+                                <select name="<?= $prefix.  '['.$name.']'; ?>">
+                                    <?php foreach ($woo_statuses as $key => $status): ?>
+                                        <option  <?= isset($getData[$name]) && $getData[$name] == $key ? 'selected' : '' ; ?> value="<?= $key ?>"><?= $status ?></option>
+                                    <?php endforeach ?>
+                                </select>
+
+                            </td>
+                        </tr>
+
+
+                    </tbody>
                 </table>
-
                 <hr />
-
                 <h2>List Reasons for Customers To Cancel.</h2>
                 <table class="wp-list-table widefat fixed striped table-view-list posts">
                     <thead>
@@ -57,8 +117,8 @@
                     <tbody class="<?= $type ?>-reasons">
                         <?php
 						$index = 0;
-						if (isset($getData[$type]['reason'])) {
-						foreach ($getData[$type]['reason'] as $key =>
+						if (isset($getData['reason'])) {
+						foreach ($getData['reason'] as $key =>
                         $value) { $id = '_enable_item_refund'; $name = $prefix.'['.$id .']'; ?>
                         <tr class="<?= $type.'-'. $index; ?>">
                             <th scope="row" class="titledesc">
