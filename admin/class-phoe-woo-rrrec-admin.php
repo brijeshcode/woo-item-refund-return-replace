@@ -88,10 +88,6 @@ class Phoe_Woo_Rrrec_Admin {
 		}
 	}
 
-	/*public function phoe_cancel_order_item_met() {
-		phoe_cancel_order_item();
-	}*/
-
 
 	public function woo_item_action_menu()
 	{
