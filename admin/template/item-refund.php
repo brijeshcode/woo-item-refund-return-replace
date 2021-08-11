@@ -2,11 +2,15 @@
 
 $type = 'Refund';
 require_once plugin_dir_path(dirname(__FILE__)) . 'partials/admin-setting-header.php';
-if (isset($_GET['action']) &&  isset($_GET['item_id'])) {
-    phoe_admin_item_request_change_status($_GET['item_id'], $_GET['action'], $type);
-}
+$message =  '';
 
-$refundRequests = get_customer_order_item_requests($type);
+if (isset($_POST['action']) &&  isset($_POST['item_id'])) {
+    $message = phoe_admin_item_request_change_status($_POST['item_id'], $_POST['action'], $type);
+}
+phoe_admin_notice($message);
+unset($message);
+$requests = get_customer_order_item_requests($type);
+
 ?>
 
 <div class="phoe-card w-95">
@@ -68,8 +72,8 @@ $refundRequests = get_customer_order_item_requests($type);
             </tfoot>
 
             <tbody>
-                <?php if (!empty($refundRequests)): ?>
-                <?php foreach ($refundRequests as $key =>
+                <?php if (!empty($requests)): ?>
+                <?php foreach ($requests as $key =>
                 $request): ?>
                 <tr>
                     <td><?= $request->created_at ?></td>
@@ -81,8 +85,8 @@ $refundRequests = get_customer_order_item_requests($type);
                     <td><?= $request->request_reason ?></td>
                     <!-- <td> <?= $request->request_admin_reason ?></td> -->
                     <td>
-                        <?php if (!in_array($request->request_status, ['Completed', 'Denied'])): ?> <a href="<?= add_query_arg(['item_id' => $request->id, 'action' => 'approve']) ?>">Approve</a> |
-                        <a href="<?= add_query_arg(['item_id' => $request->id, 'action' => 'denied']) ?>">Denied</a>
+                        <?php if (!in_array($request->request_status, ['Completed', 'Denied'])): ?>
+                             <?= requestForm($request->id, $request->request_status)?>
                         <?php endif; ?>
                     </td>
                 </tr>

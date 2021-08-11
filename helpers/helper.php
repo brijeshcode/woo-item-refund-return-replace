@@ -229,9 +229,11 @@
     // approve refund requert by admin
     function phoe_admin_approve_order_item_request($requestId, $type = 'Cancel'){
 
+        $message = ['status' => 'success' , 'message' => 'Order has been updated.'];
+
+
         /* continue from here  ------------------*/
         $data = get_customer_order_item_requests($type, $requestId);
-        echo "<pre>"; print_r($data); echo "</pre>"; die();
         $data = $data[0];
         $order = wc_get_order($data->order_id);
         $item_id = $data->item_id;
@@ -242,26 +244,65 @@
         $updated = phoe_change_request_status($requestId, 'Completed');
         if ($updated) {
             if ($type != 'Exchange') {
-                phoe_refundItemAmount($type, $order, $item_id, $reason);
+                if (phoe_refundItemAmount($type, $order, $item_id, $reason)) {
+                    // add admin note on order
+                    phoe_request_order_item_note($type, $requestId);
+                    return $message;
+                }
             }
-            // add admin note on order
-            phoe_request_order_note($type, $requestId);
         }else{
-            return 'request not found ';
+            $message = ['status' => 'error', 'message' => 'Request not fund.'];
+            return $message;
         }
+    }
+
+    function phoe_admin_approve_order_request($requestId, $type = 'Cancel'){
+
+        $message = ['status' => 'success' , 'message' => 'Order has been updated.'];
+
+        $data = get_customer_order_requests($type, $requestId);
+        $data = $data[0];
+        $order = wc_get_order($data->order_id);
+
+        $reason = $data->request_reason;
+        $requestType = $data->request_type;
+
+
+        $updated = phoe_change_request_status($requestId, 'Completed');
+        if ($updated) {
+            if ($type != 'Exchange') {
+                // we will update order status to cancelled or refund
+                if ($requestType == 'Refund') {
+                    $order->update_status('wc-refunded', 'Order status changed by admin against order Refund request by customer. Request# ' . $requestId) ;
+                    return $message;
+
+                }elseif($requestType == 'Cancel'){
+                    $order->update_status('wc-cancelled', 'Order status changed by admin against order Cancel request by customer. Request# ' . $requestId );
+                    return $message;
+                }
+
+                return ['status' => 'error' , 'message' => 'Invalid request type.'];
+            }
+        }else{
+            return ['status' => 'error' , 'message' => 'Sorry Process cannot be completed.'];
+        }
+
+
     }
 
     // Denied cancel requert by admin
     function phoe_admin_item_request_change_status($requestId, $action, $type = 'Cancel'){
+
         // only admin allow to perform this action
         $valid = phoe_validate_admin_action($type, $requestId);
         if (false !==  $valid) return $valid;
 
         if ($action == 'Completed') {
-            phoe_admin_approve_order_item_request($requestId, $type);
+            return phoe_admin_approve_order_item_request($requestId, $type);
         }else{
             if (phoe_change_request_status($requestId, $action)) {
-                phoe_request_order_note($type, $requestId);
+                phoe_request_order_item_note($type, $requestId);
+                return ['status' => 'success', 'message' => 'Request status changes Successfull.'];
             }
         }
     }
@@ -297,7 +338,54 @@
         return false;
     }
 
-    function phoe_request_order_note($type, $requestId){
+    function phoe_change_order_request_status( $requestId, $action, $type = 'Cancel' ){
+        // only admin allow to perform this action
+        $valid = phoe_validate_admin_action_order($type, $requestId);
+        if (false !==  $valid) return $valid;
+
+        if ($action == 'Completed') {
+            return phoe_admin_approve_order_request($requestId, $type);
+        }else{
+            if (phoe_change_request_status($requestId, $action)) {
+                phoe_request_order_note($type, $requestId);
+            }
+        }
+
+        return ['status' => 'success' , 'message' => 'Request Status updated'];
+    }
+
+    function phoe_validate_admin_action_order($type, $requestId){
+        $error = [
+            'status' => 'error',
+            'message' => 'Someting went wrong. Sorry request cannot be process'
+        ];
+
+        if (!is_admin()) {
+            $error['message'] = 'Unauthorized access.';
+            return $error;
+        }
+
+        $data = get_customer_order_requests($type, $requestId);
+
+        if (empty($data)) {
+            $error['message'] = 'No request found on given request id || Invalid request id';
+            return $error;
+        }
+
+        if (!in_array($data[0]->request_status, requestsOptions())) {
+            $error['message'] = 'Invalid request status. ' .$data[0]->request_status ;
+            return $error;
+        }
+
+        if ($data[0]->request_type != $type) {
+            $error['message'] = 'Invalid request.';
+            return $error;
+        }
+
+        return false;
+    }
+
+    function phoe_request_order_item_note($type, $requestId){
 
         $data = get_customer_order_item_requests($type, $requestId);
         $data = $data[0];
@@ -306,6 +394,7 @@
 
         $order = wc_get_order($data->order_id);
         $item_id = $data->item_id;
+        $order_items   = $order->get_items();
 
         foreach ($order_items as $item_key => $item) {
 
@@ -322,10 +411,25 @@
         }
     }
 
+    function phoe_request_order_note($type, $requestId){
+
+        $data = get_customer_order_requests($type, $requestId);
+        $data = $data[0];
+        if ($data->request_status != 'Denied')  return '';
+
+
+        $order = wc_get_order($data->order_id);
+        $item_id = $data->item_id;
+
+        $note = "Admin {$data->request_status} customer {$type} request for Order.";
+        $order->add_order_note( $note );
+        $order->save();
+    }
+
 
     function requestForm($item_id, $currentStatus){
         $c_html = '';
-        $c_html .= '<form>';
+        $c_html .= '<form method="post">';
         $c_html .= '<input type="hidden" value="' . $item_id . '" name="item_id">';
         $c_html .= '<input type="hidden" value="phoe-wc-item-action" name="page">';
         $c_html .= '<input type="hidden" value="'.$_GET['tab'].'" name="tab">';
@@ -346,5 +450,13 @@
 
     function requestsOptions(){
         return ['Requested', 'Processing','Completed','Denied'];
+    }
+
+    function phoe_admin_notice($message){
+        if (is_array($message)) {
+            echo '<div class="notice notice-'.$message['status'].'  is-dismissible w-50 mb-4 ">
+                <p>'.$message['message'].'</p>
+            </div>';
+        }
     }
 ?>
