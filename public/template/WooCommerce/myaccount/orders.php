@@ -29,7 +29,6 @@ if (isset($_POST['request_item_action'])) {
 do_action( 'woocommerce_before_account_orders', $has_orders ); ?>
 
 <?php if ( $has_orders ) : ?>
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
 
 	<table class="woocommerce-orders-table woocommerce-MyAccount-orders shop_table shop_table_responsive my_account_orders account-orders-table">
 		<thead>
@@ -123,6 +122,7 @@ do_action( 'woocommerce_before_account_orders', $has_orders ); ?>
 
 <?php do_action( 'woocommerce_after_account_orders', $has_orders ); ?>
 
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
 
 <?php require_once plugin_dir_path(dirname(dirname(dirname(__FILE__)))).'partials/phoe-refund-reason-model.php'; ?>
 <?php require_once plugin_dir_path(dirname(dirname(dirname(__FILE__)))).'partials/phoe-exchange-reason-model.php'; ?>

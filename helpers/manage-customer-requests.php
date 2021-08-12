@@ -44,7 +44,6 @@
                 }else{
                     return 'Exchange '. $result->request_status;
                 }
-
             }
         }
         return '';
