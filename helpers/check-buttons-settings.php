@@ -109,6 +109,9 @@
         $requested = checkIsRequestedItem($order, $item_id, $type);
         if (!$requested)  return $requested;
 
+        // no action on item if item count less then one
+        if ($order->get_item_count() < 2 ) return false;
+
         if ($type != 'cancel') {
             $validDays = checkOrderUnderDaysLimit($order, $settings, $type);
             if (!$validDays)  return $validDays;
