@@ -117,7 +117,7 @@
             if (!$validDays)  return $validDays;
         }
 
-
+        // main changes
         $order_id = $order->get_id();
         $orderTypeRequest = check_order_request_exist($order_id);
         if ($orderTypeRequest)  return !$orderTypeRequest;
