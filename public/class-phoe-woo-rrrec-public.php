@@ -19,6 +19,8 @@ class Phoe_Woo_Rrrec_Public
     public function enqueue_styles()
     {
         wp_enqueue_style($this->plugin_name, plugin_dir_url(__FILE__) . 'css/phoe-woo-rrrec-public.css', [], $this->version, 'all');
+
+         wp_enqueue_style($this->plugin_name. 'bulma', 'https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css', [], $this->version, 'all');
     }
 
     /**

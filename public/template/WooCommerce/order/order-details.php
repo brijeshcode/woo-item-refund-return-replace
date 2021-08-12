@@ -169,9 +169,21 @@ tags {
 	}
 
 	function add_request_data(order_id, item_id, actionType){
+		// open bulma modal
+		jQuery('.reason-select.'+ actionType).addClass('is-active');
+
+		jQuery('.selected-reason').text('');
+		// set values accordingly
 		jQuery('.order_id').val(order_id);
 		jQuery('.order_item_id').val(item_id);
+
+		if (item_id == '') {
+			jQuery('.request_for').val('Order');
+		}
 		jQuery('#request_item_action').val(actionType);
+	}
+	function closeReasonPopup(){
+		jQuery('.reason-select').removeClass('is-active');
 	}
 </script>
 <?php

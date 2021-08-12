@@ -122,12 +122,11 @@ do_action( 'woocommerce_before_account_orders', $has_orders ); ?>
 
 <?php do_action( 'woocommerce_after_account_orders', $has_orders ); ?>
 
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
-
 <?php require_once plugin_dir_path(dirname(dirname(dirname(__FILE__)))).'partials/phoe-refund-reason-model.php'; ?>
 <?php require_once plugin_dir_path(dirname(dirname(dirname(__FILE__)))).'partials/phoe-exchange-reason-model.php'; ?>
 <?php require_once plugin_dir_path(dirname(dirname(dirname(__FILE__)))).'partials/phoe-cancel-reason-model.php'; ?>
 <script type="text/javascript">
+
 	function show_my_reasons(type, tag){
 		jQuery('.reason-items').hide();
 		jQuery('.selected-reason').text(tag);
@@ -135,6 +134,11 @@ do_action( 'woocommerce_before_account_orders', $has_orders ); ?>
 	}
 
 	function add_request_data(order_id, item_id, actionType){
+		// open bulma modal
+		jQuery('.reason-select.'+ actionType).addClass('is-active');
+
+		jQuery('.selected-reason').text('');
+		// set values accordingly
 		jQuery('.order_id').val(order_id);
 		jQuery('.order_item_id').val(item_id);
 		if (item_id == '') {
@@ -142,6 +146,9 @@ do_action( 'woocommerce_before_account_orders', $has_orders ); ?>
 
 		}
 		jQuery('#request_item_action').val(actionType);
+	}
+	function closeReasonPopup(){
+		jQuery('.reason-select').removeClass('is-active');
 	}
 </script>
 </script>

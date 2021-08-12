@@ -81,5 +81,3 @@ if ( ! apply_filters( 'woocommerce_order_item_visible', true, $item ) ) {
 </tr>
 
 <?php endif; ?>
-
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
