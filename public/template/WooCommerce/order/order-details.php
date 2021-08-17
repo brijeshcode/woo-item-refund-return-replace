@@ -182,6 +182,7 @@ tags {
 		}
 		jQuery('#request_item_action').val(actionType);
 	}
+
 	function closeReasonPopup(){
 		jQuery('.reason-select').removeClass('is-active');
 	}

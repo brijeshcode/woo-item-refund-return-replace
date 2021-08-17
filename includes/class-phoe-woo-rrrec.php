@@ -125,6 +125,7 @@ class Phoe_Woo_Rrrec {
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'helpers/request-orders.php';
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'helpers/manage-customer-requests.php';
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'helpers/helper.php';
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'helpers/emails.php';
 
 
 		/**

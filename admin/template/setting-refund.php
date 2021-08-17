@@ -54,11 +54,11 @@
             'name' => $prefix.'[_refund_in_account]',
             'label' => 'Refund in account'
         ],*/
-        [
+        /*[
             'id' => '_refund_in_same_source',
             'name' => $prefix.'[_refund_in_same_source]',
             'label' => 'Refund to same source'
-        ]
+        ]*/
     ]
 
 ?>

@@ -22,12 +22,12 @@
             'id' => '_enable_order_exchange',
             'name' => $prefix.'[_enable_order_exchange]',
             'label' => 'Enable Exchange on Orders'
-        ],
+        ]/*,
         [
             'id' => '_add_product_image_on_exchange',
             'name' => $prefix.'[_add_product_image_on_exchange]',
             'label' => 'Add Product image for Exchange verification'
-        ]
+        ]*/
 
 
     ];

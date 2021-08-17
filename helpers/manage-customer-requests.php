@@ -120,7 +120,7 @@
             $con = " AND $tb.id = $request_id ";
         }
         $query = "
-            SELECT *  FROM $tb
+            SELECT * FROM $tb
             where request_type = '{$type}' $con AND request_for = 'Order'
             Order by  $tb.created_at asc
         ";
@@ -130,6 +130,21 @@
             return false;
         }
         return $result ;
+    }
+
+    function phoe_get_request($request_id = ''){
+        if($request_id == '') return false;
+
+        global $wpdb;
+        $tb = $wpdb->prefix . "phoe_order_item_request";
+
+        $query = " SELECT * FROM $tb where id = '{$request_id}' ";
+
+        $request = $wpdb->get_row($query);
+        if (empty($request)) {
+            return false;
+        }
+        return $request ;
     }
 
 	function insertNewRequest($type = "Cancel", $order_id, $item_id, $reason, $autoApproved  = false ){

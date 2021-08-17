@@ -113,11 +113,16 @@ class Phoe_Woo_Rrrec_Admin {
 		 	'replace-setting'=> 'setting-replace',
 		 	'replace-order'=> 'order-replace',
 		 	'settings'=> 'item-settings',
+		 	'email-setting'=> 'setting-email',
 		];
 
 		$template = isset($tabs[$selecteTab]) ? $tabs[$selecteTab] : 'invalid-tab';
 
-		include 'template/'.$template.'.php' ;
+		if ($template == 'setting-email' && isset($_GET['template'])) {
+			include 'template/email-templates/'.$_GET['template'].'.php' ;
+		}else{
+			include 'template/'.$template.'.php' ;
+		}
 	}
 
 	public function phoe_save_order_item_action_settings()
@@ -131,9 +136,28 @@ class Phoe_Woo_Rrrec_Admin {
 		}
 
 		$submitted = $_POST['phoe_wc_item_action'] ;
+
 		$key = array_keys($submitted)[0];
 		$old = get_option("phoe_order_item_actions");
 		$old[$key] = $submitted[$key];
+    	update_option("phoe_order_item_actions",$old);
+	}
+
+
+	public function phoe_save_email_templates()
+	{
+		if (!check_admin_referer('phoe_order_item_action_settings', 'phoe_order_item_action_settings_nonce_field')) {
+			return '';
+		}
+
+		if (!wp_verify_nonce( $_POST['phoe_order_item_action_settings_nonce_field'], 'phoe_order_item_action_settings' ) ) {
+			return '';
+		}
+
+		$submitted = $_POST['phoe_wc_item_action'] ;
+		$key = array_keys($submitted['email'])[0];
+		$old = get_option("phoe_order_item_actions");
+		$old['email'][$key] = $submitted['email'][$key];
     	update_option("phoe_order_item_actions",$old);
 	}
 }

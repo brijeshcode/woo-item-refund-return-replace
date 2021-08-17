@@ -86,6 +86,4 @@ $requests = get_customer_order_item_requests($type);
 	</div>
 </div>
 
-<?php require_once plugin_dir_path(dirname(__FILE__)) . 'partials/admin-setting-footer.php';
-
-?>
+<?php require_once plugin_dir_path(dirname(__FILE__)) . 'partials/admin-setting-footer.php';  ?>

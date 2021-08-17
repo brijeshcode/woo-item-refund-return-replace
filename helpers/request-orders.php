@@ -7,14 +7,16 @@
         if (false !==  $valid) return $valid;
 
         if ($action == 'Completed') {
-            return phoe_approve_order_request($requestId, $type);
+            $response =  phoe_approve_order_request($requestId, $type);
         }else{
             if (phoe_change_request_status($requestId, $action)) {
                 phoe_create_order_note($type, $requestId);
+                $response = ['status' => 'success' , 'message' => 'Order has been updated.'];
             }
         }
 
-        return ['status' => 'success' , 'message' => 'Request Status updated'];
+        if ($response['status'] == 'success') sendMail($requestId);
+        return $response;
     }
 
 
@@ -114,6 +116,8 @@
             'status' => 'info',
             'message' => 'Request Submmited Successfull.'
         ];
+
+        sendMail($request_id);
         return $data;
     }
 

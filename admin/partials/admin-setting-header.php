@@ -3,6 +3,7 @@
         'refund' => 'Refunds',
         'cancel' => 'Cancel',
         'replace' => 'Exchange',
+        'email-setting' => 'Email Settings',
     ];
     $pluginSlug = '?page=phoe-wc-item-action&tab=';
 ?>

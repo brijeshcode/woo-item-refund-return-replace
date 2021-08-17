@@ -192,11 +192,12 @@ class Phoe_Woo_Rrrec_Public
         if (in_array($status, ['cancelled', 'refunded'])) return $action;
 
         $order_id = $order->get_id();
-        $types = ['refund', 'cancel', 'exchange'];
+        // $types = ['refund', 'cancel', 'exchange'];
+        $types = ['refund', 'cancel'];
         foreach ($types as $key => $type) {
             if (canShowPhoeOrderBtns($order, $type)) {
                 $action[$type]  = [
-                    'url' => '',
+                    'url' => '#',
                     'name' => ucfirst($type),
                     'id' => $type,
                     'order_id' => $order_id
@@ -220,7 +221,7 @@ class Phoe_Woo_Rrrec_Public
         foreach ($types as $key => $type) {
             if (canShowOrderItemBtns($order, $item_id, $type)) {
                 $btns[$type]  = [
-                    'url' => '',
+                    'url' => '#',
                     'name' => ucfirst($type),
                     'id' => $type,
                     'order_id' => $order_id

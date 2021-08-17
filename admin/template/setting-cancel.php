@@ -37,11 +37,11 @@
             'name' => $prefix.'[_include_cod_charges_on_cancel]',
             'label' => 'Include COD charges in cancel amount'
         ],*/
-        [
+        /*[
             'id' => '_cancel_in_same_source',
             'name' => $prefix.'[_cancel_in_same_source]',
             'label' => 'Cancel to same source'
-        ]
+        ]*/
     ];
 ?>
 
