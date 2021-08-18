@@ -11,7 +11,9 @@ body {
     line-height: 1.4em;
     min-width: 600px;
 }
-
+.wrap{
+  font-family: sans-serif;
+}
 
 .w-10{width:10%;}
 .w-15{width:15%;}
