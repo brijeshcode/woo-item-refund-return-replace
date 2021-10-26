@@ -12,7 +12,7 @@
             $con = "item_id = $item_id";
         }
 
-        $query = " SELECT request_type, request_status FROM $tb where order_id = $order_id AND $con limit 1";
+        $query = " SELECT request_type, request_status FROM $tb where order_id = $order_id AND $con limit 1 ";
 
         $result = $wpdb->get_row($query);
 
@@ -22,7 +22,6 @@
 
         if ($text) {
             if ($result->request_type == 'Cancel') {
-
                 if ($result->request_status == 'Completed') {
                     return 'Cancelled';
                 }else{
